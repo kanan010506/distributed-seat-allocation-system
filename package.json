@@ -1,6 +1,6 @@
 {
   "name": "fullstack",
-  "priate" : "true",
+  "private" : "true",
   "workspaces": ["backend", "frontend"],
   "version": "1.0.0",
   "description": "",
