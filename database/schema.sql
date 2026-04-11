@@ -199,21 +199,6 @@ CREATE TABLE IF NOT EXISTS JEE_RANK_VERIFY (
   COMMENT='Pre-imported JEE rank data for student registration verification';
 
 -- ============================================================
--- TABLE 9: ALLOCATION_AUDIT
--- ============================================================
-CREATE TABLE IF NOT EXISTS ALLOCATION_AUDIT (
-    Audit_ID        INT AUTO_INCREMENT PRIMARY KEY,
-    Allocation_ID   INT,
-    Student_ID      INT,
-    Seat_ID         INT,
-    Round           INT,
-    Old_Status      VARCHAR(20),
-    New_Status      VARCHAR(20),
-    Action_Type     ENUM('INSERT', 'UPDATE'),
-    Changed_At      DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- ============================================================
 -- Verify: show all created tables
 -- ============================================================
 SHOW TABLES;
