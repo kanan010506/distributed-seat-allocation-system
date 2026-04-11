@@ -169,21 +169,6 @@ END$$
 
 -- ============================================================
 -- TRIGGER 7: trg_handle_upgrade_on_new_allocation
--- Event:  AFTER INSERT on SEAT_ALLOCATION
--- Why:    The original file had a logical gap: when AllocateSeats()
---         gives a student a better seat in round 2 (upgrade),
---         the old round-1 allocation's Filled_Seats never
---         gets decremented unless someone explicitly withdraws it.
---
---         This trigger auto-withdraws the previous round's
---         allocation when a new one is inserted for the same
---         student in a later round, freeing the old seat.
---
--- How:    On every new allocation insert, look for an existing
---         non-withdrawn allocation from a PREVIOUS round for
---         the same student. If found, mark it Withdrawn.
---         Trigger 6 then fires automatically and decrements
---         Filled_Seats on the old seat.
 -- ============================================================
 DROP TRIGGER IF EXISTS trg_handle_upgrade_on_new_allocation;
 CREATE TRIGGER trg_handle_upgrade_on_new_allocation
@@ -201,11 +186,6 @@ END$$
 
 -- ============================================================
 -- TRIGGER 8: trg_sync_choice_status_after_allocation
--- FIX: Original silently did nothing if CHOICE.Status was not
---      'Active' (e.g. already 'Allocated' from a prior round).
---      Now updates regardless of current status, and also
---      resets other choices back to 'Active' so the student
---      is not locked out if they float to a better option.
 -- ============================================================
 DROP TRIGGER IF EXISTS trg_sync_choice_status_after_allocation;
 CREATE TRIGGER trg_sync_choice_status_after_allocation
@@ -236,12 +216,6 @@ END$$
 
 -- ============================================================
 -- TRIGGER 9: trg_prevent_choice_after_allocation
--- FIX: Original checked Admission_Status = 'Confirmed' only.
---      Problem: a student gets inserted into SEAT_ALLOCATION
---      with Admission_Status = 'Allocated' first. Between
---      allocation and confirmation, they could still add choices.
---      Now blocks at the 'Allocated' stage too — only students
---      with no current seat (or a withdrawn one) can add choices.
 -- ============================================================
 DROP TRIGGER IF EXISTS trg_prevent_choice_after_allocation;
 CREATE TRIGGER trg_prevent_choice_after_allocation
@@ -266,12 +240,6 @@ END$$
 
 -- ============================================================
 -- TRIGGER 10: trg_log_allocation_changes
--- Event:  AFTER INSERT on SEAT_ALLOCATION
--- Why:    Synopsis Section 5.2 says the system must provide
---         "clear audit trails of all allocations."
---         Zero triggers in the original file logged anything.
---         This trigger writes every new allocation to
---         ALLOCATION_AUDIT so there is a full history.
 -- ============================================================
 DROP TRIGGER IF EXISTS trg_log_allocation_insert;
 CREATE TRIGGER trg_log_allocation_insert
@@ -301,10 +269,6 @@ END$$
 
 -- ============================================================
 -- TRIGGER 11 : trg_log_allocation_update
--- Event:  AFTER UPDATE on SEAT_ALLOCATION
--- Why:    Companion to trigger 10. Logs every status change
---         (e.g. Allocated → Confirmed, Allocated → Withdrawn)
---         so the full lifecycle of every allocation is recorded.
 -- ============================================================
 DROP TRIGGER IF EXISTS trg_log_allocation_update;
 CREATE TRIGGER trg_log_allocation_update
