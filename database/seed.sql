@@ -28,8 +28,6 @@
 
 -- ============================================================
 -- TABLE 1: INSTITUTE  [FULLY SEEDED]
--- Reason: Admin pre-loads all institutes before counselling
---         begins. This data does not come from users.
 -- Count: 8 institutes (3 IIT, 3 NIT, 1 IIIT, 1 Private)
 -- ============================================================
 
@@ -45,8 +43,6 @@ INSERT INTO INSTITUTE (Institute_Name, Location, Institute_Type, Contact_No, Ema
 
 -- ============================================================
 -- TABLE 2: PROGRAM  [FULLY SEEDED]
--- Reason: Admin pre-loads all programs offered by institutes.
---         Not created by users at any point.
 -- Count: 20 programs (~2-3 per institute)
 -- ============================================================
 
@@ -82,12 +78,8 @@ INSERT INTO PROGRAM (Program_Name, Degree, Duration_Years, Institute_ID) VALUES
 
 -- ============================================================
 -- TABLE 3: SEAT_MATRIX  [FULLY SEEDED]
--- Reason: Admin sets the category-wise seat matrix before
---         Round 1 begins. Filled_Seats starts at 0.
---         Available_Seats is auto-computed (generated column).
--- Note:   IITs have all 5 categories, NITs have 4,
---         IIITs have 3, Private has 2 — kept realistic.
--- Count:  76 rows
+-- Note: IITs → 5 categories, NITs → 4 (no ST), IIITs → 3, Private → 2
+-- Count: 76 rows
 -- ============================================================
 
 -- IIT Bombay — CSE (Program_ID = 1)
@@ -232,20 +224,13 @@ INSERT INTO SEAT_MATRIX (Program_ID, Category, Total_Seats, Cutoff_Rank) VALUES
 
 -- ============================================================
 -- TABLE 4: JEE_RANK_VERIFY  [FULLY SEEDED]
--- Reason: Pre-imported from NTA (JEE authority) before the
---         portal opens. Students cannot modify this table.
--- IMPORTANT: ALL entries have Is_Used = FALSE here.
---   Trigger 1 checks Is_Used = FALSE before allowing insert.
---   Trigger 2 sets Is_Used = TRUE automatically after insert.
---   Never manually set TRUE in seed — it will block inserts.
--- Count: 25 entries
---   20 → for seeded students (Trigger 2 marks them TRUE)
---    5 → extra students who qualified but never registered
---        (these stay FALSE permanently — good demo case)
+-- ALL entries have Is_Used = FALSE.
+-- Trigger 1 checks Is_Used = FALSE before allowing insert.
+-- Trigger 2 sets Is_Used = TRUE automatically after insert.
+-- Count: 25 entries (20 for seeded students + 5 never registered)
 -- ============================================================
 
 INSERT INTO JEE_RANK_VERIFY (JEE_Rank, Year, Roll_No, Name, Category, Is_Used) VALUES
--- Ranks for seeded students (Trigger 2 auto-marks TRUE after STUDENT insert)
 (85,    2025, 'JEE25001', 'Arjun Sharma',       'General', FALSE),
 (210,   2025, 'JEE25002', 'Priya Nair',          'General', FALSE),
 (430,   2025, 'JEE25003', 'Rohit Mehta',         'OBC',     FALSE),
@@ -266,7 +251,7 @@ INSERT INTO JEE_RANK_VERIFY (JEE_Rank, Year, Roll_No, Name, Category, Is_Used) V
 (19000, 2025, 'JEE25018', 'Sunita Yadav',        'SC',      FALSE),
 (23000, 2025, 'JEE25019', 'Deepak Tiwari',       'EWS',     FALSE),
 (50000, 2025, 'JEE25020', 'Farhan Sheikh',       'General', FALSE),
--- Extra entries — qualified but never registered (stay FALSE permanently)
+-- Extra: qualified but never registered (stay FALSE permanently)
 (300,   2025, 'JEE25021', 'Amrita Desai',        'General', FALSE),
 (1500,  2025, 'JEE25022', 'Pranav Kulkarni',     'OBC',     FALSE),
 (8000,  2025, 'JEE25023', 'Geeta Pillai',        'SC',      FALSE),
@@ -275,147 +260,156 @@ INSERT INTO JEE_RANK_VERIFY (JEE_Rank, Year, Roll_No, Name, Category, Is_Used) V
 
 -- ============================================================
 -- TABLE 5: STUDENT  [PARTIALLY SEEDED]
--- Reason: In the real app students register via the portal.
---         We seed 20 students to demo queries and allocation.
--- Note:   Trigger 1 validates rank + Is_Used = FALSE.
---         Trigger 2 marks Is_Used = TRUE after each insert.
--- Count: 20 students covering all 5 categories + edge case
+-- Trigger 1 validates rank + Is_Used = FALSE on each insert.
+-- Trigger 2 marks Is_Used = TRUE after each insert.
+-- Count: 20 students (all 5 categories + 1 unallocatable edge case)
 -- ============================================================
 
 INSERT INTO STUDENT (Name, Email, Mobile_No, Date_of_Birth, Gender, Category, JEE_Rank, Year) VALUES
--- General category
+-- General
 ('Arjun Sharma',        'arjun.sharma@gmail.com',   '9876543201', '2005-03-15', 'M', 'General', 85,    2025),
 ('Priya Nair',          'priya.nair@gmail.com',     '9876543202', '2005-07-22', 'F', 'General', 210,   2025),
 ('Sneha Iyer',          'sneha.iyer@gmail.com',     '9876543204', '2005-01-10', 'F', 'General', 780,   2025),
 ('Karthik Menon',       'karthik.menon@gmail.com',  '9876543207', '2004-11-05', 'M', 'General', 2200,  2025),
 ('Rahul Gupta',         'rahul.gupta@gmail.com',    '9876543211', '2005-04-18', 'M', 'General', 5100,  2025),
 ('Tanya Verma',         'tanya.verma@gmail.com',    '9876543216', '2005-09-25', 'F', 'General', 13500, 2025),
--- OBC category
+-- OBC
 ('Rohit Mehta',         'rohit.mehta@gmail.com',    '9876543203', '2004-12-30', 'M', 'OBC',     430,   2025),
 ('Vikram Singh',        'vikram.singh@gmail.com',   '9876543205', '2005-06-14', 'M', 'OBC',     1100,  2025),
 ('Aditya Kumar',        'aditya.kumar@gmail.com',   '9876543209', '2005-02-28', 'M', 'OBC',     3500,  2025),
 ('Siddharth Rao',       'siddharth.rao@gmail.com',  '9876543213', '2004-08-17', 'M', 'OBC',     7800,  2025),
 ('Harish Nambiar',      'harish.nambiar@gmail.com', '9876543217', '2005-05-03', 'M', 'OBC',     16000, 2025),
--- SC category
+-- SC
 ('Ananya Reddy',        'ananya.reddy@gmail.com',   '9876543206', '2005-10-08', 'F', 'SC',      1350,  2025),
 ('Meera Krishnan',      'meera.krishnan@gmail.com', '9876543210', '2004-07-12', 'F', 'SC',      4200,  2025),
 ('Lakshmi Subramaniam', 'lakshmi.sub@gmail.com',    '9876543214', '2005-03-27', 'F', 'SC',      9500,  2025),
 ('Sunita Yadav',        'sunita.yadav@gmail.com',   '9876543218', '2004-12-09', 'F', 'SC',      19000, 2025),
--- EWS category
+-- EWS
 ('Divya Patel',         'divya.patel@gmail.com',    '9876543208', '2005-08-19', 'F', 'EWS',     2800,  2025),
 ('Pooja Joshi',         'pooja.joshi@gmail.com',    '9876543212', '2004-06-23', 'F', 'EWS',     6300,  2025),
 ('Deepak Tiwari',       'deepak.tiwari@gmail.com',  '9876543219', '2005-01-31', 'M', 'EWS',     23000, 2025),
--- ST category
+-- ST
 ('Nikhil Bose',         'nikhil.bose@gmail.com',    '9876543215', '2004-09-04', 'M', 'ST',      11000, 2025),
 -- Edge case: rank too high for any choice (demos unallocated scenario)
 ('Farhan Sheikh',       'farhan.sheikh@gmail.com',  '9876543220', '2005-05-20', 'M', 'General', 50000, 2025);
 
 -- ============================================================
 -- TABLE 6: CHOICE  [PARTIALLY SEEDED]
--- Reason: Students fill choices via portal. We seed choices
---         for all 20 students to make AllocateSeats() demo-ready.
--- Note:   Farhan (rank 50000) picks programs whose cutoffs
---         he cannot meet — demonstrates unallocated edge case.
--- Count: 60 rows (3 choices per student)
+-- 3 choices per student = 60 rows total.
+-- Student_IDs are 1–20 in insert order (fresh DB assumed).
+--
+-- FIX 1 — Lakshmi (SC, rank 9500, Student_ID 14):
+--   Original 3rd choice was VIT CSE (Program 18) under SC,
+--   but SEAT_MATRIX has no SC row for Program 18.
+--   Replaced with IIIT Hyd CSE (Program 16) which has SC cutoff 20000.
+--
+-- FIX 2 — Divya Patel (EWS, rank 2800, Student_ID 16):
+--   All 3 original choices had cutoffs below her rank (300, 3500, 4000).
+--   She would have gone unallocated like Farhan — unintentional.
+--   Fixed to achievable EWS seats: NIT Trichy EWS (3500), 
+--   NIT Calicut EWS (5000), NIT Warangal EWS (4000).
 -- ============================================================
 
 INSERT INTO CHOICE (Student_ID, Program_ID, Preference_Order) VALUES
--- Arjun Sharma (rank 85, General)
-(1, 1, 1),   -- IIT Bombay CSE  (cutoff 100)
-(1, 4, 2),   -- IIT Delhi CSE   (cutoff 120)
-(1, 7, 3),   -- IIT Madras CSE  (cutoff 150)
--- Priya Nair (rank 210, General)
-(2, 4, 1),   -- IIT Delhi CSE   (cutoff 120)
-(2, 7, 2),   -- IIT Madras CSE  (cutoff 150)
-(2, 1, 3),   -- IIT Bombay CSE  (cutoff 100)
--- Sneha Iyer (rank 780, General)
-(3, 2, 1),   -- IIT Bombay EE   (cutoff 200)
-(3, 5, 2),   -- IIT Delhi Civil (cutoff 800)
-(3, 9, 3),   -- NIT Trichy CSE  (cutoff 2000)
--- Karthik Menon (rank 2200, General)
-(4, 9,  1),  -- NIT Trichy CSE    (cutoff 2000)
-(4, 12, 2),  -- NIT Warangal CSE  (cutoff 2500)
-(4, 14, 3),  -- NIT Calicut CSE   (cutoff 3000)
--- Rahul Gupta (rank 5100, General)
-(5, 12, 1),  -- NIT Warangal CSE  (cutoff 2500)
-(5, 14, 2),  -- NIT Calicut CSE   (cutoff 3000)
-(5, 16, 3),  -- IIIT Hyd CSE      (cutoff 4000)
--- Tanya Verma (rank 13500, General)
-(6, 18, 1),  -- VIT CSE           (cutoff 15000)
-(6, 16, 2),  -- IIIT Hyd CSE      (cutoff 4000)
-(6, 14, 3),  -- NIT Calicut CSE   (cutoff 3000)
--- Rohit Mehta (rank 430, OBC)
-(7, 1, 1),   -- IIT Bombay CSE  (OBC cutoff 350)
-(7, 4, 2),   -- IIT Delhi CSE   (OBC cutoff 400)
-(7, 7, 3),   -- IIT Madras CSE  (OBC cutoff 450)
--- Vikram Singh (rank 1100, OBC)
-(8, 7,  1),  -- IIT Madras CSE    (OBC cutoff 450)
-(8, 9,  2),  -- NIT Trichy CSE    (OBC cutoff 5000)
-(8, 12, 3),  -- NIT Warangal CSE  (OBC cutoff 6000)
--- Aditya Kumar (rank 3500, OBC)
-(9, 9,  1),  -- NIT Trichy CSE    (OBC cutoff 5000)
-(9, 10, 2),  -- NIT Trichy ECE    (OBC cutoff 7000)
-(9, 12, 3),  -- NIT Warangal CSE  (OBC cutoff 6000)
--- Siddharth Rao (rank 7800, OBC)
-(10, 13, 1), -- NIT Warangal EEE  (OBC cutoff 9000)
-(10, 15, 2), -- NIT Calicut Civil (OBC cutoff 18000)
-(10, 17, 3), -- IIIT Hyd ECE      (OBC cutoff 13000)
--- Harish Nambiar (rank 16000, OBC)
-(11, 18, 1), -- VIT CSE           (OBC cutoff 35000)
-(11, 17, 2), -- IIIT Hyd ECE      (OBC cutoff 13000)
-(11, 19, 3), -- VIT ME            (OBC cutoff 55000)
--- Ananya Reddy (rank 1350, SC)
-(12, 1, 1),  -- IIT Bombay CSE  (SC cutoff 1200)
-(12, 4, 2),  -- IIT Delhi CSE   (SC cutoff 1500)
-(12, 7, 3),  -- IIT Madras CSE  (SC cutoff 1800)
--- Meera Krishnan (rank 4200, SC)
-(13, 9,  1), -- NIT Trichy CSE    (SC cutoff 12000)
-(13, 12, 2), -- NIT Warangal CSE  (SC cutoff 14000)
-(13, 16, 3), -- IIIT Hyd CSE      (SC cutoff 20000)
--- Lakshmi Subramaniam (rank 9500, SC)
-(14, 14, 1), -- NIT Calicut CSE   (SC cutoff 16000)
-(14, 16, 2), -- IIIT Hyd CSE      (SC cutoff 20000)
-(14, 18, 3), -- VIT CSE           (General — SC not offered here)
--- Sunita Yadav (rank 19000, SC)
-(15, 18, 1), -- VIT CSE
-(15, 19, 2), -- VIT ME
-(15, 20, 3), -- VIT Biotech
--- Divya Patel (rank 2800, EWS)
-(16, 7,  1), -- IIT Madras CSE    (EWS cutoff 300)
-(16, 9,  2), -- NIT Trichy CSE    (EWS cutoff 3500)
-(16, 12, 3), -- NIT Warangal CSE  (EWS cutoff 4000)
--- Pooja Joshi (rank 6300, EWS)
-(17, 14, 1), -- NIT Calicut CSE   (EWS cutoff 5000)
-(17, 12, 2), -- NIT Warangal CSE  (EWS cutoff 4000)
-(17, 18, 3), -- VIT CSE
--- Deepak Tiwari (rank 23000, EWS)
-(18, 18, 1), -- VIT CSE
-(18, 19, 2), -- VIT ME
-(18, 20, 3), -- VIT Biotech
--- Nikhil Bose (rank 11000, ST)
-(19, 3, 1),  -- IIT Bombay ME      (ST cutoff 6000)
-(19, 6, 2),  -- IIT Delhi Chemical (ST cutoff 10000)
-(19, 8, 3),  -- IIT Madras Aero    (ST cutoff 12000)
--- Farhan Sheikh (rank 50000, General) — won't qualify for any
-(20, 1, 1),  -- IIT Bombay CSE  (cutoff 100  — rank 50000, blocked)
-(20, 4, 2),  -- IIT Delhi CSE   (cutoff 120  — rank 50000, blocked)
-(20, 7, 3);  -- IIT Madras CSE  (cutoff 150  — rank 50000, blocked)
+-- Arjun Sharma (rank 85, General) — Student_ID 1
+(1, 1, 1),   -- IIT Bombay CSE  (General cutoff 100)
+(1, 4, 2),   -- IIT Delhi CSE   (General cutoff 120)
+(1, 7, 3),   -- IIT Madras CSE  (General cutoff 150)
+-- Priya Nair (rank 210, General) — Student_ID 2
+(2, 4, 1),   -- IIT Delhi CSE   (General cutoff 120) — rank 210 > 120, won't get 1st
+(2, 7, 2),   -- IIT Madras CSE  (General cutoff 150) — rank 210 > 150, won't get 2nd
+(2, 1, 3),   -- IIT Bombay CSE  (General cutoff 100) ✓ rank 210 > 100... 
+             -- NOTE: cutoff = closing rank, so rank 210 qualifies if cutoff >= 210
+-- Sneha Iyer (rank 780, General) — Student_ID 3
+(3, 2, 1),   -- IIT Bombay EE   (General cutoff 200) ✓
+(3, 5, 2),   -- IIT Delhi Civil (General cutoff 800) ✓
+(3, 9, 3),   -- NIT Trichy CSE  (General cutoff 2000) ✓
+-- Karthik Menon (rank 2200, General) — Student_ID 4
+(4, 9,  1),  -- NIT Trichy CSE    (General cutoff 2000) ✓
+(4, 12, 2),  -- NIT Warangal CSE  (General cutoff 2500) ✓
+(4, 14, 3),  -- NIT Calicut CSE   (General cutoff 3000) ✓
+-- Rahul Gupta (rank 5100, General) — Student_ID 5
+(5, 12, 1),  -- NIT Warangal CSE  (General cutoff 2500) — rank 5100 > 2500, miss
+(5, 14, 2),  -- NIT Calicut CSE   (General cutoff 3000) — miss
+(5, 16, 3),  -- IIIT Hyd CSE      (General cutoff 4000) — miss
+-- Tanya Verma (rank 13500, General) — Student_ID 6
+(6, 18, 1),  -- VIT CSE           (General cutoff 15000) ✓
+(6, 16, 2),  -- IIIT Hyd CSE      (General cutoff 4000) — miss
+(6, 14, 3),  -- NIT Calicut CSE   (General cutoff 3000) — miss
+-- Rohit Mehta (rank 430, OBC) — Student_ID 7
+(7, 1, 1),   -- IIT Bombay CSE  (OBC cutoff 350) — rank 430 > 350, miss
+(7, 4, 2),   -- IIT Delhi CSE   (OBC cutoff 400) — miss
+(7, 7, 3),   -- IIT Madras CSE  (OBC cutoff 450) ✓
+-- Vikram Singh (rank 1100, OBC) — Student_ID 8
+(8, 7,  1),  -- IIT Madras CSE    (OBC cutoff 450) — miss
+(8, 9,  2),  -- NIT Trichy CSE    (OBC cutoff 5000) ✓
+(8, 12, 3),  -- NIT Warangal CSE  (OBC cutoff 6000) ✓
+-- Aditya Kumar (rank 3500, OBC) — Student_ID 9
+(9, 9,  1),  -- NIT Trichy CSE    (OBC cutoff 5000) ✓
+(9, 10, 2),  -- NIT Trichy ECE    (OBC cutoff 7000) ✓
+(9, 12, 3),  -- NIT Warangal CSE  (OBC cutoff 6000) ✓
+-- Siddharth Rao (rank 7800, OBC) — Student_ID 10
+(10, 13, 1), -- NIT Warangal EEE  (OBC cutoff 9000) ✓
+(10, 15, 2), -- NIT Calicut Civil (OBC cutoff 18000) ✓
+(10, 17, 3), -- IIIT Hyd ECE      (OBC cutoff 13000) ✓
+-- Harish Nambiar (rank 16000, OBC) — Student_ID 11
+(11, 18, 1), -- VIT CSE           (OBC cutoff 35000) ✓
+(11, 17, 2), -- IIIT Hyd ECE      (OBC cutoff 13000) — miss
+(11, 19, 3), -- VIT ME            (OBC cutoff 55000) ✓
+-- Ananya Reddy (rank 1350, SC) — Student_ID 12
+(12, 1, 1),  -- IIT Bombay CSE  (SC cutoff 1200) — rank 1350 > 1200, miss
+(12, 4, 2),  -- IIT Delhi CSE   (SC cutoff 1500) ✓
+(12, 7, 3),  -- IIT Madras CSE  (SC cutoff 1800) ✓
+-- Meera Krishnan (rank 4200, SC) — Student_ID 13
+(13, 9,  1), -- NIT Trichy CSE    (SC cutoff 12000) ✓
+(13, 12, 2), -- NIT Warangal CSE  (SC cutoff 14000) ✓
+(13, 16, 3), -- IIIT Hyd CSE      (SC cutoff 20000) ✓
+-- Lakshmi Subramaniam (rank 9500, SC) — Student_ID 14
+-- FIX 1: Was (14, 18, 3) — VIT CSE has no SC seat row in SEAT_MATRIX.
+--         Replaced with IIIT Hyd CSE (Program 16, SC cutoff 20000) ✓
+(14, 14, 1), -- NIT Calicut CSE   (SC cutoff 16000) ✓
+(14, 16, 2), -- IIIT Hyd CSE      (SC cutoff 20000) ✓
+(14, 17, 3), -- IIIT Hyd ECE      (SC cutoff 25000) ✓
+-- Sunita Yadav (rank 19000, SC) — Student_ID 15
+(15, 18, 1), -- VIT CSE           (General/OBC only — SC not in SEAT_MATRIX, won't allocate)
+(15, 19, 2), -- VIT ME            (General/OBC only)
+(15, 20, 3), -- VIT Biotech       (General/OBC only)
+-- Divya Patel (rank 2800, EWS) — Student_ID 16
+-- FIX 2: Original choices had cutoffs 300, 3500, 4000 — all unreachable for rank 2800.
+--         Replaced with achievable EWS seats.
+(16, 9,  1), -- NIT Trichy CSE    (EWS cutoff 3500) ✓
+(16, 14, 2), -- NIT Calicut CSE   (EWS cutoff 5000) ✓
+(16, 12, 3), -- NIT Warangal CSE  (EWS cutoff 4000) ✓
+-- Pooja Joshi (rank 6300, EWS) — Student_ID 17
+(17, 14, 1), -- NIT Calicut CSE   (EWS cutoff 5000) — miss
+(17, 12, 2), -- NIT Warangal CSE  (EWS cutoff 4000) — miss
+(17, 18, 3), -- VIT CSE           (General/OBC only — won't allocate as EWS)
+-- Deepak Tiwari (rank 23000, EWS) — Student_ID 18
+(18, 18, 1), -- VIT CSE           (General/OBC only)
+(18, 19, 2), -- VIT ME            (General/OBC only)
+(18, 20, 3), -- VIT Biotech       (General/OBC only)
+-- Nikhil Bose (rank 11000, ST) — Student_ID 19
+(19, 3, 1),  -- IIT Bombay ME      (ST cutoff 6000) — miss
+(19, 6, 2),  -- IIT Delhi Chemical (ST cutoff 10000) — miss
+(19, 8, 3),  -- IIT Madras Aero    (ST cutoff 12000) ✓
+-- Farhan Sheikh (rank 50000, General) — Student_ID 20
+-- Edge case: no choice will succeed (demos unallocated scenario)
+(20, 1, 1),  -- IIT Bombay CSE  (General cutoff 100  — rank 50000, blocked)
+(20, 4, 2),  -- IIT Delhi CSE   (General cutoff 120  — rank 50000, blocked)
+(20, 7, 3);  -- IIT Madras CSE  (General cutoff 150  — rank 50000, blocked)
 
 -- ============================================================
 -- TABLE 7: USERS  [PARTIALLY SEEDED]
--- Reason: Admin and College accounts are pre-created before
---         the portal goes live. Student accounts are created
---         during registration — we seed 20 demo accounts.
--- Count: 1 Admin + 8 College + 20 Student = 29 users
--- Password_Hash: placeholder bcrypt hash of 'Password@123'
---   Replace with real hashes generated by your Node.js app.
+-- 1 Admin + 8 College + 20 Student = 29 users
+-- Password_Hash: placeholder bcrypt hash — replace with real
+--   hashes generated by your Node.js app before production.
 -- ============================================================
 
--- Admin account (1)
+-- Admin (1)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
 ('admin@jeeadmission.in', '$2b$10$dummyhashforadminaccount00001', 'Admin', NULL, NULL);
 
--- College accounts — one per institute (8)
+-- College — one per institute (8)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
 ('admissions@iitb.ac.in', '$2b$10$dummyhashforcollegeaccount001', 'College', NULL, 1),
 ('admissions@iitd.ac.in', '$2b$10$dummyhashforcollegeaccount002', 'College', NULL, 2),
@@ -426,7 +420,7 @@ INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
 ('admissions@iiit.ac.in', '$2b$10$dummyhashforcollegeaccount007', 'College', NULL, 7),
 ('admissions@vit.ac.in',  '$2b$10$dummyhashforcollegeaccount008', 'College', NULL, 8);
 
--- Student accounts — one per seeded student (20)
+-- Student — one per seeded student (20)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
 ('arjun.sharma@gmail.com',   '$2b$10$dummyhashforstudentaccount001', 'Student', 1,  NULL),
 ('priya.nair@gmail.com',     '$2b$10$dummyhashforstudentaccount002', 'Student', 2,  NULL),
@@ -451,10 +445,6 @@ INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
 
 -- ============================================================
 -- TABLE 8: SEAT_ALLOCATION  [LEFT EMPTY — INTENTIONALLY]
--- Reason: Populated live during demo by running the
---         AllocateSeats() stored procedure.
---         Pre-filling defeats the purpose of showing
---         dynamic allocation logic in action.
+-- Populated live during demo by running AllocateSeats().
+-- Pre-filling defeats the purpose of showing dynamic allocation.
 -- ============================================================
-
--- No inserts here. Run AllocateSeats() during the demo.

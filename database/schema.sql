@@ -128,16 +128,15 @@ CREATE TABLE IF NOT EXISTS SEAT_ALLOCATION (
     Allocation_ID     INT      NOT NULL AUTO_INCREMENT,
     Student_ID        INT      NOT NULL,
     Seat_ID           INT      NOT NULL,
-    Allocation_Round  TINYINT  NOT NULL,
-    Allocation_Status ENUM('Allocated','Upgraded','Rejected','Withdrawn') NOT NULL DEFAULT 'Allocated',
+    Allocation_Status ENUM('Allocated','Rejected','Withdrawn') NOT NULL DEFAULT 'Allocated',
     Allocation_Date   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Admission_Status  ENUM('Pending','Confirmed','Cancelled') NOT NULL DEFAULT 'Pending',
 
     PRIMARY KEY (Allocation_ID),
-    UNIQUE KEY uq_student_round (Student_ID, Allocation_Round),
+    UNIQUE KEY uq_one_seat_per_student (Student_ID),
+    UNIQUE KEY uq_one_student_per_seat (Seat_ID),
     INDEX idx_alloc_student (Student_ID),
     INDEX idx_alloc_seat (Seat_ID), 
-    CHECK (Allocation_Round > 0),
     CONSTRAINT fk_alloc_student
         FOREIGN KEY (Student_ID)
         REFERENCES STUDENT(Student_ID)
@@ -149,7 +148,7 @@ CREATE TABLE IF NOT EXISTS SEAT_ALLOCATION (
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 ) ENGINE=InnoDB
-  COMMENT='Final seat allocation results per round';
+  COMMENT='Final seat allocation results';
 
 -- ============================================================
 -- TABLE 7: USERS  
@@ -206,12 +205,21 @@ CREATE TABLE IF NOT EXISTS ALLOCATION_AUDIT (
     Allocation_ID   INT,
     Student_ID      INT,
     Seat_ID         INT,
-    Round           INT,
-    Old_Status      VARCHAR(20),
-    New_Status      VARCHAR(20),
+    Old_Status  ENUM('Allocated','Rejected','Withdrawn','Pending','Confirmed','Cancelled') NULL,
+    New_Status  ENUM('Allocated','Rejected','Withdrawn','Pending','Confirmed','Cancelled') NULL,
     Action_Type     ENUM('INSERT', 'UPDATE'),
-    Changed_At      DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+    Changed_At      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_audit_allocation (Allocation_ID),
+    INDEX idx_audit_student    (Student_ID),
+    INDEX idx_audit_seat       (Seat_ID),
+    CONSTRAINT fk_audit_alloc
+        FOREIGN KEY (Allocation_ID) REFERENCES SEAT_ALLOCATION(Allocation_ID) ON DELETE SET NULL,
+    CONSTRAINT fk_audit_student
+        FOREIGN KEY (Student_ID)    REFERENCES STUDENT(Student_ID)            ON DELETE SET NULL,
+    CONSTRAINT fk_audit_seat
+        FOREIGN KEY (Seat_ID)       REFERENCES SEAT_MATRIX(Seat_ID)           ON DELETE SET NULL
+)ENGINE=InnoDB
+  COMMENT='Audit trail for seat allocation status changes';
 
 -- ============================================================
 -- Verify: show all created tables
