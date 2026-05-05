@@ -1,5 +1,5 @@
 // js/api.js — centralised API client
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:5001/api';
 
 const api = {
   _token() { return localStorage.getItem('token'); },

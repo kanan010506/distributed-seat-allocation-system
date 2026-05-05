@@ -1,167 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DSAS — Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     :root {
-      --bg: #080a0e; --surface: #0e1117; --surface2: #141820; --surface3: #1a1f2b;
-      --border: rgba(255,255,255,0.07); --accent: #f5a623; --accent2: #e8522a;
-      --text: #e8eaf0; --muted: #6b7280; --success: #22c55e; --error: #ef4444;
+      --bg: #080a0e;
+      --surface: #0e1117;
+      --surface2: #141820;
+      --surface3: #1a1f2b;
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #f5a623;
+      --accent2: #e8522a;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --success: #22c55e;
+      --error: #ef4444;
       --grad: linear-gradient(135deg, #f5a623, #e8522a);
       --admin: #a78bfa;
     }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
 
     /* SIDEBAR */
     aside {
-      width: 220px; min-height: 100vh; background: var(--surface);
-      border-right: 1px solid var(--border); display: flex; flex-direction: column;
-      padding: 24px 0; position: fixed; top: 0; left: 0; height: 100%;
+      width: 220px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
     }
+
     .brand {
       padding: 0 20px 24px;
       border-bottom: 1px solid var(--border);
     }
+
     .brand-name {
-      font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
     }
-    .brand-name span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .brand-sub { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
 
-    .nav-list { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .brand-name span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-top: 2px;
+    }
+
+    .nav-list {
+      padding: 16px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
     .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 10px; border: none;
-      background: transparent; color: var(--muted);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: all 0.2s; width: 100%; text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      text-align: left;
     }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(245,166,35,0.1); color: var(--accent); }
-    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
 
-    .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(245, 166, 35, 0.1);
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+    }
+
     .admin-badge {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2);
-      border-radius: 10px; margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      margin-bottom: 8px;
     }
-    .admin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--admin); }
-    .admin-label { font-size: 12px; color: var(--admin); font-weight: 500; }
+
+    .admin-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--admin);
+    }
+
+    .admin-label {
+      font-size: 12px;
+      color: var(--admin);
+      font-weight: 500;
+    }
+
     .btn-logout {
-      width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px;
-      background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif;
-      font-size: 13px; cursor: pointer; transition: all 0.2s;
+      width: 100%;
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .btn-logout:hover { border-color: var(--error); color: #fca5a5; }
+
+    .btn-logout:hover {
+      border-color: var(--error);
+      color: #fca5a5;
+    }
 
     /* MAIN */
-    .main-content { margin-left: 220px; flex: 1; padding: 32px; overflow-y: auto; min-height: 100vh; }
-    .page { display: none; }
-    .page.active { display: block; animation: fade-in 0.3s ease; }
-    @keyframes fade-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .main-content {
+      margin-left: 220px;
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
 
-    .page-header { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; }
-    .page-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 0.03em; }
-    .page-header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fade-in 0.3s ease;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .page-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 38px;
+      letter-spacing: 0.03em;
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
 
     /* KPI CARDS */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-    .kpi-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-      padding: 20px; position: relative; overflow: hidden;
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
     }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
     .kpi-card::after {
-      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-      background: var(--grad); transform: scaleX(0.4); transform-origin: left;
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--grad);
+      transform: scaleX(0.4);
+      transform-origin: left;
       transition: transform 0.3s;
     }
-    .kpi-card:hover::after { transform: scaleX(1); }
-    .kpi-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
-    .kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 1; }
-    .kpi-val.orange { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .kpi-val.green { color: var(--success); }
-    .kpi-val.purple { color: var(--admin); }
-    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .kpi-card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+
+    .kpi-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .kpi-val.orange {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kpi-val.green {
+      color: var(--success);
+    }
+
+    .kpi-val.purple {
+      color: var(--admin);
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
 
     /* ALLOCATION CONTROL */
     .action-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-      padding: 28px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
     }
+
     .action-icon {
-      width: 56px; height: 56px; border-radius: 14px; background: rgba(245,166,35,0.1);
-      display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(245, 166, 35, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
     }
-    .action-text h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-    .action-text p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .action-text h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .action-text p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
     .btn-run {
-      margin-left: auto; padding: 12px 28px;
-      background: var(--grad); border: none; border-radius: 10px;
-      color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-      cursor: pointer; white-space: nowrap; transition: opacity 0.2s, transform 0.15s; flex-shrink: 0;
+      margin-left: auto;
+      padding: 12px 28px;
+      background: var(--grad);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.15s;
+      flex-shrink: 0;
     }
-    .btn-run:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-run:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    .btn-run:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     /* TABLE */
     .card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       overflow: hidden;
     }
+
     .card-header {
-      padding: 16px 20px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .card-title { font-size: 14px; font-weight: 600; }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { text-align: left; padding: 10px 16px; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--border); background: var(--surface2); }
-    td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.015);
+    }
 
     .status-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 100px; font-size: 11px;
-      font-family: 'DM Mono', monospace; font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
     }
-    .status-allocated { background: rgba(34,197,94,0.1); color: #86efac; }
-    .status-rejected { background: rgba(239,68,68,0.1); color: #fca5a5; }
-    .status-pending { background: rgba(245,166,35,0.1); color: var(--accent); }
-    .status-confirmed { background: rgba(167,139,250,0.1); color: var(--admin); }
-    .status-cancelled { background: rgba(107,114,128,0.1); color: var(--muted); }
 
-    .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
-    .alert.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-    .alert.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
-    .alert.show { display: block; }
+    .status-allocated {
+      background: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+    }
 
-    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .status-rejected {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+    }
 
-    .empty-row td { text-align: center; padding: 40px; color: var(--muted); }
+    .status-pending {
+      background: rgba(245, 166, 35, 0.1);
+      color: var(--accent);
+    }
+
+    .status-confirmed {
+      background: rgba(167, 139, 250, 0.1);
+      color: var(--admin);
+    }
+
+    .status-cancelled {
+      background: rgba(107, 114, 128, 0.1);
+      color: var(--muted);
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .alert.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .empty-row td {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+
     .search-input {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
-      outline: none; width: 220px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      width: 220px;
     }
-    .search-input:focus { border-color: var(--accent); }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
 
     /* result summary after run */
     .run-result {
-      background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2);
-      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none;
-      font-size: 14px; color: #86efac;
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+      color: #86efac;
     }
-    .run-result.show { display: block; }
+
+    .run-result.show {
+      display: block;
+    }
   </style>
 </head>
+
 <body>
   <aside>
     <div class="brand">
@@ -170,11 +538,15 @@
     </div>
     <nav class="nav-list">
       <button class="nav-item active" onclick="switchPage('overview')"><span class="nav-icon">◈</span> Overview</button>
-      <button class="nav-item" onclick="switchPage('allocation')"><span class="nav-icon">⚙</span> Run Allocation</button>
+      <button class="nav-item" onclick="switchPage('allocation')"><span class="nav-icon">⚙</span> Run
+        Allocation</button>
       <button class="nav-item" onclick="switchPage('report')"><span class="nav-icon">⊞</span> Allocation Report</button>
     </nav>
     <div class="sidebar-footer">
-      <div class="admin-badge"><div class="admin-dot"></div><div class="admin-label">Admin Access</div></div>
+      <div class="admin-badge">
+        <div class="admin-dot"></div>
+        <div class="admin-label">Admin Access</div>
+      </div>
       <button class="btn-logout" onclick="api.logout()">Sign Out</button>
     </div>
   </aside>
@@ -217,10 +589,17 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Program</th><th>Institute</th><th>Total Seats</th><th>Duration</th></tr>
+              <tr>
+                <th>Program</th>
+                <th>Institute</th>
+                <th>Total Seats</th>
+                <th>Duration</th>
+              </tr>
             </thead>
             <tbody id="overview-tbody">
-              <tr class="empty-row"><td colspan="4">Loading…</td></tr>
+              <tr class="empty-row">
+                <td colspan="4">Loading…</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -232,7 +611,9 @@
       <div class="page-header">
         <div>
           <h2>Run Allocation</h2>
-          <p>Execute the seat allocation algorithm (calls <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">AllocateSeats()</code> stored procedure).</p>
+          <p>Execute the seat allocation algorithm (calls <code
+              style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">AllocateSeats()</code> stored
+            procedure).</p>
         </div>
       </div>
       <div class="alert" id="alloc-alert"></div>
@@ -241,7 +622,8 @@
         <div class="action-icon">⚙</div>
         <div class="action-text">
           <h3>Execute Allocation Round</h3>
-          <p>This will run the <strong>AllocateSeats()</strong> MySQL stored procedure which assigns seats to students based on their JEE rank, category, and preference order. This action cannot be undone.</p>
+          <p>This will run the <strong>AllocateSeats()</strong> MySQL stored procedure which assigns seats to students
+            based on their JEE rank, category, and preference order. This action cannot be undone.</p>
         </div>
         <button class="btn-run" id="run-btn" onclick="runAllocation()">Run Allocation</button>
       </div>
@@ -252,8 +634,10 @@
             <li>Students are sorted by JEE rank (lower = better).</li>
             <li>For each student, choices are evaluated in preference order.</li>
             <li>A seat in the student's category is reserved if available.</li>
-            <li>Allocated students' choice status updates to <code style="color:var(--accent);font-family:'DM Mono',monospace">Allocated</code>.</li>
-            <li>Remaining choices are marked <code style="color:#fca5a5;font-family:'DM Mono',monospace">Withdrawn</code>.</li>
+            <li>Allocated students' choice status updates to <code
+                style="color:var(--accent);font-family:'DM Mono',monospace">Allocated</code>.</li>
+            <li>Remaining choices are marked <code
+                style="color:#fca5a5;font-family:'DM Mono',monospace">Withdrawn</code>.</li>
           </ol>
         </div>
       </div>
@@ -271,7 +655,8 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title">All Allocations</span>
-          <input class="search-input" id="report-search" placeholder="Search student / program…" oninput="filterReport()" />
+          <input class="search-input" id="report-search" placeholder="Search student / program…"
+            oninput="filterReport()" />
         </div>
         <div class="table-wrap">
           <table>
@@ -286,7 +671,9 @@
               </tr>
             </thead>
             <tbody id="report-tbody">
-              <tr class="empty-row"><td colspan="6">Loading report…</td></tr>
+              <tr class="empty-row">
+                <td colspan="6">Loading report…</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -319,7 +706,7 @@
     }
 
     function statusBadge(status) {
-      const map = { Allocated:'allocated', Rejected:'rejected', Pending:'pending', Confirmed:'confirmed', Cancelled:'cancelled', Withdrawn:'cancelled' };
+      const map = { Allocated: 'allocated', Rejected: 'rejected', Pending: 'pending', Confirmed: 'confirmed', Cancelled: 'cancelled', Withdrawn: 'cancelled' };
       const cls = map[status] || 'pending';
       return `<span class="status-badge status-${cls}">${status || '—'}</span>`;
     }
@@ -345,13 +732,16 @@
     async function loadReport() {
       try {
         const data = await api.getAllocationReport();
-        reportData = data.data || [];
+        const reportDataObj = data.data || {};
+        window._reportRaw = reportDataObj; 
+        reportData = reportDataObj.programBreakdown || [];
 
-        // update KPIs
-        document.getElementById('kpi-allocated').textContent = reportData.filter(r => r.Allocation_Status === 'Allocated').length;
-        document.getElementById('kpi-confirmed').textContent = reportData.filter(r => r.Admission_Status === 'Confirmed').length;
+        // update KPIs from roundSummary
+        const summary = (reportDataObj.roundSummary || [])[0] || {};
+        document.getElementById('kpi-allocated').textContent = summary.Status_Allocated || 0;
+        document.getElementById('kpi-confirmed').textContent = summary.Admissions_Confirmed || 0;
 
-        renderReport(reportData);
+        renderReport(reportDataObj.categoryUsage || []);
       } catch (e) {
         showAlert('report-alert', 'Failed to load report: ' + e.message, 'error');
         document.getElementById('report-tbody').innerHTML = '<tr class="empty-row"><td colspan="6">Failed to load.</td></tr>';
@@ -360,11 +750,11 @@
 
     function filterReport() {
       const q = document.getElementById('report-search').value.toLowerCase();
-      const filtered = q ? reportData.filter(r =>
-        (r.Student_Name||'').toLowerCase().includes(q) ||
+      const source = (window._reportRaw && window._reportRaw.categoryUsage) || [];
+      const filtered = q ? source.filter(r =>
         (r.Program_Name||'').toLowerCase().includes(q) ||
         (r.Institute_Name||'').toLowerCase().includes(q)
-      ) : reportData;
+      ) : source;
       renderReport(filtered);
     }
 
@@ -407,4 +797,5 @@
     loadOverview();
   </script>
 </body>
+
 </html>

@@ -87,7 +87,7 @@ BEGIN
             Old_Status, New_Status, Action_Type, Changed_At
         ) VALUES (
             NULL, v_student_id, NULL,
-            NULL, CONCAT('ERROR: ', LEFT(v_err_msg, 200)),
+            NULL, 'Rejected',
             'INSERT', NOW()
         );
     END;
@@ -146,7 +146,7 @@ BEGIN
         ORDER  BY C.Preference_Order ASC
         LIMIT  1;
 
-        SET v_done = 0;
+        
 
         -- -------------------------------------------------------
         -- If a seat was found, insert the allocation inside its

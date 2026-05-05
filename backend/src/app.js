@@ -26,7 +26,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth',       require('./routes/auth.routes'));
 app.use('/api/students',   require('./routes/student.routes'));
 app.use('/api/choices',    require('./routes/choice.routes'));
-app.use('/api/allocation', require('./routes/allocation.routes'));
+app.use('/api/allocations', require('./routes/allocation.routes'));
 app.use('/api/programs',   require('./routes/program.routes'));
 app.use('/api/reports',    require('./routes/report.routes'));
 
