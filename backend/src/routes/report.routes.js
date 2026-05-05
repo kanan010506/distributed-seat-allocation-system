@@ -7,5 +7,6 @@ router.use(authenticate);
 router.use(authorize('Admin'));
 
 router.get('/allocation', reportController.getAllocationReport);
+router.get('/allocations', reportController.getAllAllocations);
 
 module.exports = router;

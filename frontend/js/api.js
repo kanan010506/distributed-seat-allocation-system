@@ -35,6 +35,7 @@ const api = {
   runAllocation: () => api._req('/allocations/run', { method: 'POST' }),
 
   getAllocationReport: () => api._req('/reports/allocation'),
+  getAllAllocations: () => api._req('/reports/allocations'),
 
   logout() { localStorage.clear(); window.location.href = '../index.html'; }
 };

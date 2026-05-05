@@ -512,7 +512,6 @@
       border-color: var(--accent);
     }
 
-    /* result summary after run */
     .run-result {
       background: rgba(34, 197, 94, 0.06);
       border: 1px solid rgba(34, 197, 94, 0.2);
@@ -537,10 +536,9 @@
       <div class="brand-sub">Admin Console</div>
     </div>
     <nav class="nav-list">
-      <button class="nav-item active" onclick="switchPage('overview')"><span class="nav-icon">◈</span> Overview</button>
-      <button class="nav-item" onclick="switchPage('allocation')"><span class="nav-icon">⚙</span> Run
-        Allocation</button>
-      <button class="nav-item" onclick="switchPage('report')"><span class="nav-icon">⊞</span> Allocation Report</button>
+      <button class="nav-item active" onclick="switchPage('overview', this)"><span class="nav-icon">◈</span> Overview</button>
+      <button class="nav-item" onclick="switchPage('allocation', this)"><span class="nav-icon">⚙</span> Run Allocation</button>
+      <button class="nav-item" onclick="switchPage('report', this)"><span class="nav-icon">⊞</span> Allocation Report</button>
     </nav>
     <div class="sidebar-footer">
       <div class="admin-badge">
@@ -560,7 +558,6 @@
           <p>System-wide seat allocation overview.</p>
         </div>
       </div>
-
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Total Programs</div>
@@ -583,7 +580,6 @@
           <div class="kpi-sub">admissions</div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header"><span class="card-title">Programs Overview</span></div>
         <div class="table-wrap">
@@ -597,9 +593,7 @@
               </tr>
             </thead>
             <tbody id="overview-tbody">
-              <tr class="empty-row">
-                <td colspan="4">Loading…</td>
-              </tr>
+              <tr class="empty-row"><td colspan="4">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -611,9 +605,7 @@
       <div class="page-header">
         <div>
           <h2>Run Allocation</h2>
-          <p>Execute the seat allocation algorithm (calls <code
-              style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">AllocateSeats()</code> stored
-            procedure).</p>
+          <p>Execute the seat allocation algorithm (calls <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">AllocateSeats()</code> stored procedure).</p>
         </div>
       </div>
       <div class="alert" id="alloc-alert"></div>
@@ -622,8 +614,7 @@
         <div class="action-icon">⚙</div>
         <div class="action-text">
           <h3>Execute Allocation Round</h3>
-          <p>This will run the <strong>AllocateSeats()</strong> MySQL stored procedure which assigns seats to students
-            based on their JEE rank, category, and preference order. This action cannot be undone.</p>
+          <p>This will run the <strong>AllocateSeats()</strong> MySQL stored procedure which assigns seats to students based on their JEE rank, category, and preference order. This action cannot be undone.</p>
         </div>
         <button class="btn-run" id="run-btn" onclick="runAllocation()">Run Allocation</button>
       </div>
@@ -634,10 +625,8 @@
             <li>Students are sorted by JEE rank (lower = better).</li>
             <li>For each student, choices are evaluated in preference order.</li>
             <li>A seat in the student's category is reserved if available.</li>
-            <li>Allocated students' choice status updates to <code
-                style="color:var(--accent);font-family:'DM Mono',monospace">Allocated</code>.</li>
-            <li>Remaining choices are marked <code
-                style="color:#fca5a5;font-family:'DM Mono',monospace">Withdrawn</code>.</li>
+            <li>Allocated students' choice status updates to <code style="color:var(--accent);font-family:'DM Mono',monospace">Allocated</code>.</li>
+            <li>Remaining choices are marked <code style="color:#fca5a5;font-family:'DM Mono',monospace">Withdrawn</code>.</li>
           </ol>
         </div>
       </div>
@@ -655,8 +644,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title">All Allocations</span>
-          <input class="search-input" id="report-search" placeholder="Search student / program…"
-            oninput="filterReport()" />
+          <input class="search-input" id="report-search" placeholder="Search student / program…" oninput="filterReport()" />
         </div>
         <div class="table-wrap">
           <table>
@@ -671,9 +659,7 @@
               </tr>
             </thead>
             <tbody id="report-tbody">
-              <tr class="empty-row">
-                <td colspan="6">Loading report…</td>
-              </tr>
+              <tr class="empty-row"><td colspan="6">Loading report…</td></tr>
             </tbody>
           </table>
         </div>
@@ -690,18 +676,19 @@
 
     let reportData = [];
 
-    function switchPage(name) {
+    function switchPage(name, el) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       document.getElementById('page-' + name).classList.add('active');
-      event && event.currentTarget && event.currentTarget.classList.add('active');
+      if (el) el.classList.add('active');
       if (name === 'overview') loadOverview();
       if (name === 'report') loadReport();
     }
 
     function showAlert(id, msg, type) {
       const el = document.getElementById(id);
-      el.textContent = msg; el.className = 'alert ' + type + ' show';
+      el.textContent = msg;
+      el.className = 'alert ' + type + ' show';
       setTimeout(() => el.classList.remove('show'), 5000);
     }
 
@@ -724,24 +711,29 @@
             <td style="font-weight:500">${p.Program_Name}</td>
             <td style="color:var(--muted)">${p.Institute_Name}</td>
             <td>${p.Total_Seats || '—'}</td>
-            <td>${p.Duration || '—'} yrs</td>
+            <td>${p.Duration_Years || p.Duration || '—'} yrs</td>
           </tr>`).join('') || '<tr class="empty-row"><td colspan="4">No programs found.</td></tr>';
-      } catch { }
+      } catch (e) {
+        console.error('Overview load error:', e);
+      }
     }
 
     async function loadReport() {
       try {
-        const data = await api.getAllocationReport();
-        const reportDataObj = data.data || {};
-        window._reportRaw = reportDataObj; 
-        reportData = reportDataObj.programBreakdown || [];
+        const [reportRes, allocRes] = await Promise.all([
+          api.getAllocationReport(),
+          api.getAllAllocations()
+        ]);
 
-        // update KPIs from roundSummary
+        const reportDataObj = reportRes.data || {};
+        window._reportRaw = allocRes.data || [];
+        reportData = window._reportRaw;
+
         const summary = (reportDataObj.roundSummary || [])[0] || {};
         document.getElementById('kpi-allocated').textContent = summary.Status_Allocated || 0;
         document.getElementById('kpi-confirmed').textContent = summary.Admissions_Confirmed || 0;
 
-        renderReport(reportDataObj.categoryUsage || []);
+        renderReport(reportData);
       } catch (e) {
         showAlert('report-alert', 'Failed to load report: ' + e.message, 'error');
         document.getElementById('report-tbody').innerHTML = '<tr class="empty-row"><td colspan="6">Failed to load.</td></tr>';
@@ -750,25 +742,25 @@
 
     function filterReport() {
       const q = document.getElementById('report-search').value.toLowerCase();
-      const source = (window._reportRaw && window._reportRaw.categoryUsage) || [];
-      const filtered = q ? source.filter(r =>
-        (r.Program_Name||'').toLowerCase().includes(q) ||
-        (r.Institute_Name||'').toLowerCase().includes(q)
-      ) : source;
+      const filtered = q ? reportData.filter(r =>
+        (r.Student_Name || '').toLowerCase().includes(q) ||
+        (r.Program_Name || '').toLowerCase().includes(q) ||
+        (r.Institute_Name || '').toLowerCase().includes(q)
+      ) : reportData;
       renderReport(filtered);
     }
 
     function renderReport(rows) {
       const tbody = document.getElementById('report-tbody');
-      if (!rows.length) {
+      if (!rows || !rows.length) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No allocation records found. Run allocation first.</td></tr>';
         return;
       }
       tbody.innerHTML = rows.map(r => `
         <tr>
           <td style="font-weight:500">${r.Student_Name || 'Student #' + r.Student_ID}</td>
-          <td>${r.Program_Name}</td>
-          <td style="color:var(--muted)">${r.Institute_Name}</td>
+          <td>${r.Program_Name || '—'}</td>
+          <td style="color:var(--muted)">${r.Institute_Name || '—'}</td>
           <td><span class="status-badge status-pending">${r.Seat_Category || r.Category || '—'}</span></td>
           <td>${statusBadge(r.Allocation_Status)}</td>
           <td>${statusBadge(r.Admission_Status)}</td>
@@ -777,7 +769,8 @@
 
     async function runAllocation() {
       const btn = document.getElementById('run-btn');
-      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Running…';
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Running…';
       const resultEl = document.getElementById('run-result');
       resultEl.classList.remove('show');
       try {
@@ -789,7 +782,8 @@
       } catch (e) {
         showAlert('alloc-alert', 'Allocation failed: ' + e.message, 'error');
       } finally {
-        btn.disabled = false; btn.innerHTML = 'Run Allocation';
+        btn.disabled = false;
+        btn.innerHTML = 'Run Allocation';
       }
     }
 
