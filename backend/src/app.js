@@ -4,10 +4,15 @@
 
 const express = require('express');
 const morgan  = require('morgan');
+const cors    = require('cors');  
 
 const app = express();
 
 // ── Middleware ──────────────────────────────────────────────
+app.use(cors({                            // ← ADD THIS BLOCK
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5500'],
+  credentials: true
+}));
 app.use(express.json());          // parse JSON request bodies
 app.use(express.urlencoded({ extended: false })); // parse form data
 app.use(morgan('dev'));            // log: METHOD /path STATUS ms

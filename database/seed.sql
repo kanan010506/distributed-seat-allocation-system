@@ -407,41 +407,41 @@ INSERT INTO CHOICE (Student_ID, Program_ID, Preference_Order) VALUES
 
 -- Admin (1)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
-('admin@jeeadmission.in', '$2b$10$dummyhashforadminaccount00001', 'Admin', NULL, NULL);
+('admin@jeeadmission.in', '$2b$10$wJF3NymH.8/cwFEPqy5NHetvKWSdmt7MwLuq8Y/0pluJthBXDhUjK', 'Admin', NULL, NULL);
 
 -- College — one per institute (8)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
-('admissions@iitb.ac.in', '$2b$10$dummyhashforcollegeaccount001', 'College', NULL, 1),
-('admissions@iitd.ac.in', '$2b$10$dummyhashforcollegeaccount002', 'College', NULL, 2),
-('admissions@iitm.ac.in', '$2b$10$dummyhashforcollegeaccount003', 'College', NULL, 3),
-('admissions@nitt.edu',   '$2b$10$dummyhashforcollegeaccount004', 'College', NULL, 4),
-('admissions@nitw.ac.in', '$2b$10$dummyhashforcollegeaccount005', 'College', NULL, 5),
-('admissions@nitc.ac.in', '$2b$10$dummyhashforcollegeaccount006', 'College', NULL, 6),
-('admissions@iiit.ac.in', '$2b$10$dummyhashforcollegeaccount007', 'College', NULL, 7),
-('admissions@vit.ac.in',  '$2b$10$dummyhashforcollegeaccount008', 'College', NULL, 8);
+('admissions@iitb.ac.in', '$2b$10$Mx.HdgLXmQ9KDYF0s3zo2.wdQNeZwfykLRbBhMJs3uiv/ir0285ES', 'College', NULL, 1),
+('admissions@iitd.ac.in', '$2b$10$UJmRM54IZf0qWA88GG8N1.Bu9kbsfC6buwzX5pOIbG0.iFQY0VV.m', 'College', NULL, 2),
+('admissions@iitm.ac.in', '$2b$10$GSGZk4aZhqwjYyIC8I/WAu1AQxQjXf4dhmTp6XyzcoN25OaSUsmtK', 'College', NULL, 3),
+('admissions@nitt.edu',   '$2b$10$KHvRRmOIEWLsn2mK6FBarOx/Cip1N4mZ3vXtxOlYiyJ4R01vP5ZN2', 'College', NULL, 4),
+('admissions@nitw.ac.in', '$2b$10$E95uekuXxxLHUa95qzSUy.8qrjfDFjRCQmg6Oij8OiESHxn9vq2lW', 'College', NULL, 5),
+('admissions@nitc.ac.in', '$2b$10$AgOME7HlwLjriANoqxwe0eJCb8JPEvGk3V/Kj.v/dB6emIyp.eg7e', 'College', NULL, 6),
+('admissions@iiit.ac.in', '$2b$10$J9ixDkpHWErHniSFwBp2EOm4/F11Q4HlrQTkQuSv.GpzZ9a/bs4EW', 'College', NULL, 7),
+('admissions@vit.ac.in',  '$2b$10$DNHhZ4/AwInT9xpsdlxQyO.Y9ag/N9KHUjhZX7PrPi8PHGjkCMWrq', 'College', NULL, 8);
 
 -- Student — one per seeded student (20)
 INSERT INTO USERS (Email, Password_Hash, Role, Student_ID, Institute_ID) VALUES
-('arjun.sharma@gmail.com',   '$2b$10$dummyhashforstudentaccount001', 'Student', 1,  NULL),
-('priya.nair@gmail.com',     '$2b$10$dummyhashforstudentaccount002', 'Student', 2,  NULL),
-('sneha.iyer@gmail.com',     '$2b$10$dummyhashforstudentaccount003', 'Student', 3,  NULL),
-('karthik.menon@gmail.com',  '$2b$10$dummyhashforstudentaccount004', 'Student', 4,  NULL),
-('rahul.gupta@gmail.com',    '$2b$10$dummyhashforstudentaccount005', 'Student', 5,  NULL),
-('tanya.verma@gmail.com',    '$2b$10$dummyhashforstudentaccount006', 'Student', 6,  NULL),
-('rohit.mehta@gmail.com',    '$2b$10$dummyhashforstudentaccount007', 'Student', 7,  NULL),
-('vikram.singh@gmail.com',   '$2b$10$dummyhashforstudentaccount008', 'Student', 8,  NULL),
-('aditya.kumar@gmail.com',   '$2b$10$dummyhashforstudentaccount009', 'Student', 9,  NULL),
-('siddharth.rao@gmail.com',  '$2b$10$dummyhashforstudentaccount010', 'Student', 10, NULL),
-('harish.nambiar@gmail.com', '$2b$10$dummyhashforstudentaccount011', 'Student', 11, NULL),
-('ananya.reddy@gmail.com',   '$2b$10$dummyhashforstudentaccount012', 'Student', 12, NULL),
-('meera.krishnan@gmail.com', '$2b$10$dummyhashforstudentaccount013', 'Student', 13, NULL),
-('lakshmi.sub@gmail.com',    '$2b$10$dummyhashforstudentaccount014', 'Student', 14, NULL),
-('sunita.yadav@gmail.com',   '$2b$10$dummyhashforstudentaccount015', 'Student', 15, NULL),
-('divya.patel@gmail.com',    '$2b$10$dummyhashforstudentaccount016', 'Student', 16, NULL),
-('pooja.joshi@gmail.com',    '$2b$10$dummyhashforstudentaccount017', 'Student', 17, NULL),
-('deepak.tiwari@gmail.com',  '$2b$10$dummyhashforstudentaccount018', 'Student', 18, NULL),
-('nikhil.bose@gmail.com',    '$2b$10$dummyhashforstudentaccount019', 'Student', 19, NULL),
-('farhan.sheikh@gmail.com',  '$2b$10$dummyhashforstudentaccount020', 'Student', 20, NULL);
+('arjun.sharma@gmail.com',   '$2b$10$cWarY9.N0BqMca/JcPxCQOqIi0amZkmAeCVjlGExXIP0VWScQhdbi', 'Student', 1,  NULL),
+('priya.nair@gmail.com',     '$2b$10$dKLX61oldglRTkYufp51TOM9ENmerf9R8kNpgNIIxOEMZBcxVcICm', 'Student', 2,  NULL),
+('sneha.iyer@gmail.com',     '$2b$10$EHSLzPCpUsLcpUZoi470fe5PCv1jogprZ7LqWKstDYqwc6042uizG', 'Student', 3,  NULL),
+('karthik.menon@gmail.com',  '$2b$10$CSZiO85p7TDW28ddYptYgO8MDjG8aFLHoJIqnnRT6KGwSzrTBTH0.', 'Student', 4,  NULL),
+('rahul.gupta@gmail.com',    '$2b$10$qPbYnRNlnmg.B4A9vJ8ZqOXTyUM4t43fwB9VZjCL4ueO5BDL2UUe.', 'Student', 5,  NULL),
+('tanya.verma@gmail.com',    '$2b$10$e50zxhhwb54537YNdydexO.gKt/6iqyMTX3zVqp5N.AnSdgwwZ/Eu', 'Student', 6,  NULL),
+('rohit.mehta@gmail.com',    '$2b$10$OU1T8pilTJVpzlcjfuZeX.11w6fHyrqXxKAX32NzuF93H1w34QIvy', 'Student', 7,  NULL),
+('vikram.singh@gmail.com',   '$2b$10$A3eeLPu2hoSY5OrC9hoD1OCCRbxqJJ2Dp4X9.2i9ctmpnqkArJF8i', 'Student', 8,  NULL),
+('aditya.kumar@gmail.com',   '$2b$10$140WXM4eJ0zJtFu759tVZO9a.uH4NQ1AbpSRc7VGAlE228g7f0tLK', 'Student', 9,  NULL),
+('siddharth.rao@gmail.com',  '$2b$10$ubrJu0UXG9T2OwYlXva5RuXTdCs.Fm6yagzdDq6wfjZyg0WdR3zRO', 'Student', 10, NULL),
+('harish.nambiar@gmail.com', '$2b$10$XE9v3AipsSDFh9xtqI0lLeQS0nD/a.mqPjX4HUVIvYCysSRzuYla.', 'Student', 11, NULL),
+('ananya.reddy@gmail.com',   '$2b$10$oWN.AFUCwHQhB1c2z.tGiOLEtCM0y/vHRhbIvoz/V7HYlWjwPw0/C', 'Student', 12, NULL),
+('meera.krishnan@gmail.com', '$2b$10$BF6ZKLHI69uIkLL2fQ65F.r/06M3la8HbEgJ7rSUtJcxkFlcn0K.O', 'Student', 13, NULL),
+('lakshmi.sub@gmail.com',    '$2b$10$6eAYadqmKKxu4T6YqKwf4u0WcLU6NR1rzcOo23reERtS5Csg0ENui', 'Student', 14, NULL),
+('sunita.yadav@gmail.com',   '$2b$10$6TSTfsVIz25gwSBQ1W9Ncuztff7vKhpk6yv6TVnL5bGff1XVFecMW', 'Student', 15, NULL),
+('divya.patel@gmail.com',    '$2b$10$owVQCidoX.HwGlD2jjASJucnmAe0CvwJ/Sy1c/N.tsciwTHbzznuS', 'Student', 16, NULL),
+('pooja.joshi@gmail.com',    '$2b$10$UOVuowaD/Jz7g3q2yzOFDuMRoY4Wpge/ufXCPlbN4NPJpKyUalglu', 'Student', 17, NULL),
+('deepak.tiwari@gmail.com',  '$2b$10$oz.6zdcJzX.7887XG.FDoO53u4ly1BJZDbVa6wexRUdAbxslHupLC', 'Student', 18, NULL),
+('nikhil.bose@gmail.com',    '$2b$10$v2dffkby3UGdZGO8YWeJOuiw49SPVdhdWH9tG0AWoF0excggO7i2q', 'Student', 19, NULL),
+('farhan.sheikh@gmail.com',  '$2b$10$MYGsSEpNRR67juhSW0GDfeEDUJIlLo7ji1rOVPwK6XeyCsm0NATii', 'Student', 20, NULL);
 
 -- ============================================================
 -- TABLE 8: SEAT_ALLOCATION  [LEFT EMPTY — INTENTIONALLY]
