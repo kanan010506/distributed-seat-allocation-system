@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSAS — College Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080a0e;
+      --surface:  #0e1117;
+      --surface2: #141820;
+      --surface3: #1a1f2b;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #f5a623;
+      --accent2:  #e8522a;
+      --text:     #e8eaf0;
+      --muted:    #6b7280;
+      --success:  #22c55e;
+      --error:    #ef4444;
+      --grad:     linear-gradient(135deg, #f5a623, #e8522a);
+      --college:  #34d399;   /* teal — distinct from admin purple */
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: block;  /* aside is fixed, main needs full width not flex */
+    }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100%;
+    }
+    .brand { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+    .brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+    }
+    .brand-name span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-sub {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.08em;
+    }
+    .role-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.06em;
+      font-weight: 500;
+      background: rgba(52,211,153,0.15);
+      color: var(--college);
+      border: 1px solid rgba(52,211,153,0.25);
+    }
+
+    nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+    .nav-section {
+      font-size: 9px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      padding: 12px 20px 6px;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 2px solid transparent;
+      user-select: none;
+    }
+    .nav-item:hover { color: var(--text); background: var(--surface2); }
+    .nav-item.active {
+      color: var(--college);
+      background: rgba(52,211,153,0.08);
+      border-left-color: var(--college);
+    }
+    .nav-icon { width: 16px; text-align: center; font-size: 14px; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .institute-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .institute-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-logout {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      margin-left: 220px;
+      padding: 32px 40px;
+      overflow-y: auto;
+      min-height: 100vh;
+      box-sizing: border-box;
+      /* Take exactly the remaining viewport width */
+      width: calc(100vw - 220px);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+    }
+    .page-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .page-header p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    /* full-width two-col layout for overview */
+    .overview-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1100px) {
+      .overview-bottom { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ── KPI GRID ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .kpi-label {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .kpi-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 34px;
+      line-height: 1.1;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .kpi-value.green { color: var(--college); }
+    .kpi-value.orange { color: var(--accent); }
+    .kpi-value.red { color: var(--error); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 11px 14px; vertical-align: middle; }
+    .empty-row td { color: var(--muted); text-align: center; padding: 28px; font-size: 13px; }
+
+    /* ── PROGRESS BAR ── */
+    .prog-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--surface3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .prog-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--grad);
+      transition: width 0.4s ease;
+    }
+
+    /* ── BADGES ── */
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .status-allocated  { background: rgba(34,197,94,0.12);  color: #4ade80; }
+    .status-pending    { background: rgba(245,166,35,0.12);  color: var(--accent); }
+    .status-confirmed  { background: rgba(52,211,153,0.12);  color: var(--college); }
+    .status-cancelled  { background: rgba(239,68,68,0.12);   color: var(--error); }
+    .status-withdrawn  { background: rgba(107,114,128,0.12); color: var(--muted); }
+    .status-general    { background: rgba(255,255,255,0.06); color: var(--text); }
+    .cat-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      background: rgba(245,166,35,0.1);
+      color: var(--accent);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SEARCH INPUT ── */
+    .search-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 12px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--college); }
+
+    /* ── PROGRAM FILTER SELECT ── */
+    .prog-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      cursor: pointer;
+    }
+    .prog-select:focus { border-color: var(--college); }
+
+    /* ── CONFIRM BUTTON (inline in table) ── */
+    .btn-confirm {
+      padding: 4px 12px;
+      border-radius: 5px;
+      border: 1px solid rgba(52,211,153,0.3);
+      background: rgba(52,211,153,0.1);
+      color: var(--college);
+      font-size: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-confirm:hover { background: rgba(52,211,153,0.2); border-color: var(--college); }
+    .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── ALERT ── */
+    .alert {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .alert.show { display: block; }
+    .alert.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #4ade80; }
+    .alert.error   { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.2);  color: var(--error); }
+
+    /* ── SEAT MATRIX MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 560px;
+      max-width: 95vw;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.04em; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 20px; }
+
+    /* ── REPORT GRID ── */
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .report-row {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .report-prog { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+    .report-cat  { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+    .report-nums { display: flex; gap: 12px; font-size: 12px; }
+    .report-nums span { color: var(--muted); }
+    .report-nums strong { color: var(--text); }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── SIDEBAR ── -->
+  <aside>
+    <div class="brand">
+      <div class="brand-name">DSAS <span>Portal</span></div>
+      <div class="brand-sub">Seat Allocation System</div>
+      <div class="role-badge">● COLLEGE</div>
+    </div>
+
+    <nav>
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="switchPage('overview', this)">
+        <span class="nav-icon">⊞</span> Overview
+      </div>
+      <div class="nav-item" onclick="switchPage('programs', this)">
+        <span class="nav-icon">📋</span> Programs
+      </div>
+
+      <div class="nav-section">Admissions</div>
+      <div class="nav-item" onclick="switchPage('allocations', this)">
+        <span class="nav-icon">👤</span> Allocated Students
+      </div>
+      <div class="nav-item" onclick="switchPage('report', this)">
+        <span class="nav-icon">📊</span> Seat Report
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="institute-label">Logged in as</div>
+      <div class="institute-name" id="sidebar-institute">—</div>
+      <button class="btn-logout" onclick="api.logout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main>
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="page-header">
+        <div>
+          <h2>College Overview</h2>
+          <p id="institute-subtitle">Loading institute details…</p>
+        </div>
+      </div>
+      <div class="alert" id="overview-alert"></div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Programs</div>
+          <div class="kpi-value orange" id="kpi-programs">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Total Seats</div>
+          <div class="kpi-value" id="kpi-total-seats">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Filled Seats</div>
+          <div class="kpi-value green" id="kpi-filled">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Available</div>
+          <div class="kpi-value orange" id="kpi-available">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Allocated</div>
+          <div class="kpi-value green" id="kpi-allocated">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pending Confirm</div>
+          <div class="kpi-value orange" id="kpi-pending">—</div>
+        </div>
+      </div>
+
+      <div class="overview-bottom">
+        <!-- Programs at a Glance -->
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">
+            <span class="card-title">Programs at a Glance</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Program</th>
+                  <th>Degree</th>
+                  <th>Total</th>
+                  <th>Filled</th>
+                  <th>Available</th>
+                  <th>Fill %</th>
+                </tr>
+              </thead>
+              <tbody id="overview-tbody">
+                <tr class="empty-row"><td colspan="6">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Admission Status Breakdown -->
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">
+            <span class="card-title">Admission Status Breakdown</span>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:16px" id="overview-status-panel">
+            <div style="color:var(--muted);font-size:13px">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div class="page" id="page-programs">
+      <div class="page-header">
+        <div>
+          <h2>Programs &amp; Seat Matrix</h2>
+          <p>Click <em>View Seats</em> on any row to see the category-wise seat breakdown.</p>
+        </div>
+      </div>
+      <div class="alert" id="prog-alert"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Programs</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Program</th>
+                <th>Degree</th>
+                <th>Duration</th>
+                <th>Total Seats</th>
+                <th>Filled</th>
+                <th>Available</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="prog-tbody">
+              <tr class="empty-row"><td colspan="7">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALLOCATED STUDENTS -->
+    <div class="page" id="page-allocations">
+      <div class="page-header">
+        <div>
+          <h2>Allocated Students</h2>
+          <p>Students holding a seat in your institute. Confirm their admission here.</p>
+        </div>
+      </div>
+      <div class="alert" id="alloc-alert"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Allocations</span>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <select class="prog-select" id="alloc-prog-filter" onchange="loadAllocations()">
+              <option value="">All Programs</option>
+            </select>
+            <input class="search-input" id="alloc-search" placeholder="Search student…" oninput="filterAllocations()" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Rank</th>
+                <th>Category</th>
+                <th>Program</th>
+                <th>Seat Category</th>
+                <th>Alloc. Status</th>
+                <th>Admission</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="alloc-tbody">
+              <tr class="empty-row"><td colspan="8">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEAT REPORT -->
+    <div class="page" id="page-report">
+      <div class="page-header">
+        <div>
+          <h2>Seat Report</h2>
+          <p>Category-wise seat utilisation across all your programs.</p>
+        </div>
+      </div>
+      <div class="alert" id="report-alert"></div>
+
+      <div class="report-grid" id="report-grid">
+        <div style="color:var(--muted);font-size:13px;padding:12px">Loading report…</div>
+      </div>
+
+      <!-- Detailed table below the grid -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Detailed Breakdown</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Program</th>
+                <th>Category</th>
+                <th>Total</th>
+                <th>Filled</th>
+                <th>Available</th>
+                <th>Cutoff Rank</th>
+                <th>Utilisation</th>
+              </tr>
+            </thead>
+            <tbody id="report-tbody">
+              <tr class="empty-row"><td colspan="7">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── SEAT MATRIX MODAL ── -->
+  <div class="modal-overlay" id="seat-modal" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modal-prog-name">Seat Matrix</span>
+        <button class="modal-close" onclick="document.getElementById('seat-modal').classList.remove('open')">✕</button>
+      </div>
+      <div class="modal-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Total</th>
+              <th>Filled</th>
+              <th>Available</th>
+              <th>Cutoff Rank</th>
+            </tr>
+          </thead>
+          <tbody id="modal-tbody">
+            <tr class="empty-row"><td colspan="5">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    // ── AUTH GUARD ──────────────────────────────────────────────
+    const token = localStorage.getItem('token');
+    const user  = token && JSON.parse(localStorage.getItem('user') || '{}');
+    if (!token || user.role !== 'College') {
+      window.location.href = '../index.html';
+    }
+
+    let _allocRaw = [];  // full allocation list for client-side filtering
+
+    // ── PAGE SWITCHER ────────────────────────────────────────────
+    function switchPage(name, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      if (el) el.classList.add('active');
+      if (name === 'overview')    loadOverview();
+      if (name === 'programs')    loadPrograms();
+      if (name === 'allocations') { populateProgFilter(); loadAllocations(); }
+      if (name === 'report')      loadReport();
+    }
+
+    // ── HELPERS ──────────────────────────────────────────────────
+    function showAlert(id, msg, type) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = 'alert ' + type + ' show';
+      setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
+    function statusBadge(status) {
+      const map = {
+        Allocated: 'allocated', Rejected: 'cancelled',
+        Pending: 'pending', Confirmed: 'confirmed',
+        Cancelled: 'cancelled', Withdrawn: 'withdrawn'
+      };
+      return `<span class="status-badge status-${map[status] || 'general'}">${status || '—'}</span>`;
+    }
+
+    function fillPct(filled, total) {
+      const pct = total > 0 ? Math.round(filled / total * 100) : 0;
+      const color = pct > 80 ? '#ef4444' : pct > 50 ? 'var(--accent)' : 'var(--college)';
+      return `<div style="font-size:12px;color:${color}">${pct}%</div>
+              <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>`;
+    }
+
+    // ── OVERVIEW ─────────────────────────────────────────────────
+    async function loadOverview() {
+      try {
+        const { data } = await api.collegeDashboard();
+        const { institute, seatStats, allocStats } = data;
+
+        document.getElementById('sidebar-institute').textContent  = institute.Institute_Name;
+        document.getElementById('institute-subtitle').textContent =
+          `${institute.Institute_Type} · ${institute.Location}`;
+
+        document.getElementById('kpi-programs').textContent     = seatStats.total_programs || 0;
+        document.getElementById('kpi-total-seats').textContent  = seatStats.total_seats    || 0;
+        document.getElementById('kpi-filled').textContent       = seatStats.filled_seats   || 0;
+        document.getElementById('kpi-available').textContent    = seatStats.available_seats|| 0;
+        document.getElementById('kpi-allocated').textContent    = allocStats.total_allocated || 0;
+        document.getElementById('kpi-pending').textContent      = allocStats.pending        || 0;
+
+        // Also load program glance table
+        const { data: programs } = await api.collegePrograms();
+        document.getElementById('overview-tbody').innerHTML = programs.map(p => `
+          <tr>
+            <td style="font-weight:500">${p.Program_Name}</td>
+            <td><span class="cat-badge">${p.Degree}</span></td>
+            <td>${p.total_seats}</td>
+            <td>${p.filled_seats}</td>
+            <td style="color:var(--college)">${p.available_seats}</td>
+            <td>${fillPct(p.filled_seats, p.total_seats)}</td>
+          </tr>`).join('') || '<tr class="empty-row"><td colspan="6">No programs found.</td></tr>';
+
+        // Admission status breakdown panel
+        const total     = Number(allocStats.total_allocated) || 0;
+        const confirmed = Number(allocStats.confirmed)        || 0;
+        const pending   = Number(allocStats.pending)          || 0;
+        const withdrawn = Number(allocStats.withdrawn)        || 0;
+        const stats = [
+          { label: 'Confirmed',  value: confirmed, color: 'var(--college)', bg: 'rgba(52,211,153,0.1)'  },
+          { label: 'Pending',    value: pending,   color: 'var(--accent)',  bg: 'rgba(245,166,35,0.1)'  },
+          { label: 'Withdrawn',  value: withdrawn, color: 'var(--muted)',   bg: 'rgba(107,114,128,0.1)' },
+          { label: 'Total Allocated', value: total, color: 'var(--text)',   bg: 'rgba(255,255,255,0.04)' },
+        ];
+        document.getElementById('overview-status-panel').innerHTML = stats.map(s => {
+          const pct = total > 0 && s.label !== 'Total Allocated' ? Math.round(s.value / total * 100) : null;
+          return `<div style="background:${s.bg};border-radius:8px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px">${s.label}</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:${s.color};line-height:1">${s.value}</div>
+            </div>
+            ${pct !== null ? `<div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:${s.color};opacity:0.5">${pct}%</div>` : ''}
+          </div>`;
+        }).join('');
+
+      } catch (e) {
+        showAlert('overview-alert', 'Failed to load overview: ' + e.message, 'error');
+      }
+    }
+
+    // ── PROGRAMS ─────────────────────────────────────────────────
+    async function loadPrograms() {
+      try {
+        const { data: programs } = await api.collegePrograms();
+        document.getElementById('prog-tbody').innerHTML = programs.map(p => `
+          <tr>
+            <td style="font-weight:500">${p.Program_Name}</td>
+            <td><span class="cat-badge">${p.Degree}</span></td>
+            <td style="color:var(--muted)">${p.Duration_Years} yrs</td>
+            <td>${p.total_seats}</td>
+            <td>${p.filled_seats}</td>
+            <td style="color:var(--college)">${p.available_seats}</td>
+            <td>
+              <button class="btn-confirm" onclick="openSeatModal(${p.Program_ID}, '${p.Program_Name.replace(/'/g, "\\'")}')">
+                View Seats
+              </button>
+            </td>
+          </tr>`).join('') || '<tr class="empty-row"><td colspan="7">No programs found.</td></tr>';
+      } catch (e) {
+        showAlert('prog-alert', 'Failed to load programs: ' + e.message, 'error');
+      }
+    }
+
+    // ── SEAT MATRIX MODAL ────────────────────────────────────────
+    async function openSeatModal(programId, programName) {
+      document.getElementById('modal-prog-name').textContent = programName + ' — Seat Matrix';
+      document.getElementById('modal-tbody').innerHTML = '<tr class="empty-row"><td colspan="5">Loading…</td></tr>';
+      document.getElementById('seat-modal').classList.add('open');
+
+      try {
+        const { data } = await api.collegeSeatMatrix(programId);
+        document.getElementById('modal-tbody').innerHTML = data.map(row => `
+          <tr>
+            <td><span class="cat-badge">${row.Category}</span></td>
+            <td>${row.Total_Seats}</td>
+            <td>${row.Filled_Seats}</td>
+            <td style="color:var(--college)">${row.Available_Seats}</td>
+            <td style="font-family:'DM Mono',monospace;font-size:12px">${row.Cutoff_Rank || '—'}</td>
+          </tr>`).join('') || '<tr class="empty-row"><td colspan="5">No seat rows found.</td></tr>';
+      } catch (e) {
+        document.getElementById('modal-tbody').innerHTML = `<tr class="empty-row"><td colspan="5">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    function closeModal(e) {
+      if (e.target.id === 'seat-modal') {
+        document.getElementById('seat-modal').classList.remove('open');
+      }
+    }
+
+    // ── ALLOCATIONS ──────────────────────────────────────────────
+    async function populateProgFilter() {
+      const sel = document.getElementById('alloc-prog-filter');
+      if (sel.options.length > 1) return;  // already populated
+      try {
+        const { data: progs } = await api.collegePrograms();
+        progs.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.Program_ID;
+          opt.textContent = p.Program_Name;
+          sel.appendChild(opt);
+        });
+      } catch (_) {}
+    }
+
+    async function loadAllocations() {
+      const programId = document.getElementById('alloc-prog-filter').value;
+      try {
+        const { data } = await api.collegeAllocations(programId || null);
+        _allocRaw = data;
+        renderAllocations(_allocRaw);
+      } catch (e) {
+        showAlert('alloc-alert', 'Failed to load allocations: ' + e.message, 'error');
+        document.getElementById('alloc-tbody').innerHTML = '<tr class="empty-row"><td colspan="8">Error loading data.</td></tr>';
+      }
+    }
+
+    function filterAllocations() {
+      const q = document.getElementById('alloc-search').value.toLowerCase();
+      const filtered = q
+        ? _allocRaw.filter(r => (r.student_name || '').toLowerCase().includes(q))
+        : _allocRaw;
+      renderAllocations(filtered);
+    }
+
+    function renderAllocations(rows) {
+      const tbody = document.getElementById('alloc-tbody');
+      if (!rows || !rows.length) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No allocations found. Run allocation first.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr id="alloc-row-${r.Allocation_ID}">
+          <td style="font-weight:500">${r.student_name}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px">${r.JEE_Rank}</td>
+          <td><span class="cat-badge">${r.Category}</span></td>
+          <td>${r.Program_Name} <span style="color:var(--muted);font-size:11px">(${r.Degree})</span></td>
+          <td><span class="cat-badge">${r.seat_category}</span></td>
+          <td>${statusBadge(r.Allocation_Status)}</td>
+          <td>${statusBadge(r.Admission_Status)}</td>
+          <td>
+            ${r.Allocation_Status === 'Allocated' && r.Admission_Status === 'Pending'
+              ? `<button class="btn-confirm" id="confirm-btn-${r.Allocation_ID}"
+                         onclick="confirmAdmission(${r.Allocation_ID})">Confirm</button>`
+              : `<span style="color:var(--muted);font-size:12px">—</span>`}
+          </td>
+        </tr>`).join('');
+    }
+
+    async function confirmAdmission(allocationId) {
+      const btn = document.getElementById('confirm-btn-' + allocationId);
+      if (btn) { btn.disabled = true; btn.textContent = '…'; }
+      try {
+        const data = await api.collegeConfirmAdmission(allocationId);
+        if (!data.success) throw new Error(data.error);
+        showAlert('alloc-alert', 'Admission confirmed successfully.', 'success');
+        await loadAllocations();  // refresh table
+      } catch (e) {
+        showAlert('alloc-alert', 'Failed to confirm: ' + e.message, 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Confirm'; }
+      }
+    }
+
+    // ── REPORT ───────────────────────────────────────────────────
+    async function loadReport() {
+      try {
+        const { data } = await api.collegeReport();
+        if (!data.length) {
+          document.getElementById('report-grid').innerHTML = '<div style="color:var(--muted);font-size:13px">No seat data found.</div>';
+          document.getElementById('report-tbody').innerHTML = '<tr class="empty-row"><td colspan="7">No data.</td></tr>';
+          return;
+        }
+
+        // Cards (unique program rows)
+        const byProg = {};
+        data.forEach(r => {
+          if (!byProg[r.Program_Name]) byProg[r.Program_Name] = [];
+          byProg[r.Program_Name].push(r);
+        });
+        document.getElementById('report-grid').innerHTML = Object.entries(byProg).map(([prog, rows]) => {
+          const total  = rows.reduce((s, r) => s + r.Total_Seats, 0);
+          const filled = rows.reduce((s, r) => s + r.Filled_Seats, 0);
+          const pct    = total > 0 ? Math.round(filled / total * 100) : 0;
+          return `<div class="report-row">
+            <div class="report-prog">${prog}</div>
+            <div class="report-cat">${rows[0].Degree} · ${rows.length} categories</div>
+            <div class="prog-bar" style="margin-bottom:8px">
+              <div class="prog-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="report-nums">
+              <span>Filled:</span><strong>${filled}/${total}</strong>
+              <span style="margin-left:auto;color:var(--accent)">${pct}%</span>
+            </div>
+          </div>`;
+        }).join('');
+
+        // Detailed table
+        document.getElementById('report-tbody').innerHTML = data.map(r => {
+          const pct = r.utilisation_pct || 0;
+          const color = pct > 80 ? 'var(--error)' : pct > 50 ? 'var(--accent)' : 'var(--college)';
+          return `<tr>
+            <td style="font-weight:500">${r.Program_Name}</td>
+            <td><span class="cat-badge">${r.Category}</span></td>
+            <td>${r.Total_Seats}</td>
+            <td>${r.Filled_Seats}</td>
+            <td style="color:var(--college)">${r.Available_Seats}</td>
+            <td style="font-family:'DM Mono',monospace;font-size:12px">${r.Cutoff_Rank || '—'}</td>
+            <td>
+              <span style="color:${color};font-weight:600">${pct}%</span>
+              <div class="prog-bar" style="margin-top:4px;width:80px">
+                <div class="prog-fill" style="width:${pct}%;background:${color}"></div>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch (e) {
+        showAlert('report-alert', 'Failed to load report: ' + e.message, 'error');
+      }
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────
+    loadOverview();
+  </script>
+</body>
+</html>

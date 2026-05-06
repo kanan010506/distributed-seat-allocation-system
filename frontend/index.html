@@ -429,7 +429,8 @@
         if (!data.success) throw new Error(data.error || 'Login failed');
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        if (data.user.role === 'Admin') window.location.href = 'pages/admin.html';
+        if (data.user.role === 'Admin')   window.location.href = 'pages/admin.html';
+        else if (data.user.role === 'College') window.location.href = 'pages/college.html';
         else window.location.href = 'pages/student.html';
       } catch (e) {
         showAlert('login-alert', e.message, 'error');
@@ -465,7 +466,9 @@
     const token = localStorage.getItem('token');
     const user = token && JSON.parse(localStorage.getItem('user') || '{}');
     if (token && user.role) {
-      window.location.href = user.role === 'Admin' ? 'pages/admin.html' : 'pages/student.html';
+      if (user.role === 'Admin')        window.location.href = 'pages/admin.html';
+      else if (user.role === 'College') window.location.href = 'pages/college.html';
+      else                              window.location.href = 'pages/student.html';
     }
   </script>
 </body>
